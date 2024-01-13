@@ -1,0 +1,15 @@
+beautifulsoup4==4.12.2
+colorama==0.4.6
+instaloader==4.10
+pyfiglet==0.8.post1
+pytube==15.0.0
+requests==2.30.0
+tqdm==4.62.1
+flask==2.3.2
+eventlet==0.33.3
+gunicorn==21.2.0
+apscheduler==3.10.1
+gevent==23.7.0
+mysql-connector-python
+shortuuid==1.0.11
+spotdl
