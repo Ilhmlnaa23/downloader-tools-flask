@@ -8,6 +8,8 @@ app.secret_key = "garox"
 app.config['UPLOAD_FOLDER'] = 'media/youtube'
 app.config['SESSION_TYPE'] = 'filesystem'
 
+linkvideo = 'source_url'
+
 @app.route('/')
 def index():
     response_data = {"Status": 'Ready'}
@@ -41,12 +43,12 @@ class sosial_downloader:
         new_file = None
 
         if request.method == 'POST':
-            video_url = request.form['video_url']
+            video_url = request.form[linkvideo]
             title = youtube_title(video_url)
 
             download_option = request.form.get('download_option')
-            download_mp3 = download_option == "mp3"
-            download_mp4 = download_option == "mp4"
+            download_mp3 = download_option == "audio"
+            download_mp4 = download_option == "video"
 
             if download_mp3:
                 title += ".mp3"
@@ -83,7 +85,7 @@ class sosial_downloader:
     @api_key_required
     def twitter_downloader():
         if request.method == 'POST':
-            url = request.form['url']
+            url = request.form[linkvideo]
             option = request.form['download_option'] 
 
             headers = {
@@ -142,7 +144,7 @@ class sosial_downloader:
     @app.route('/instagram_downloader', methods=['POST'])
     @api_key_required
     def instagram_downloader():
-        url = request.form['url']
+        url = request.form[linkvideo]
         file_name = None  # 
         #timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S_UTC")
 
@@ -186,7 +188,7 @@ class sosial_downloader:
     @api_key_required
     def tiktok_downloader_page():
         if request.method == 'POST':
-            url = request.form['url']
+            url = request.form[linkvideo]
             option = request.form['download_option']  # This should be either "audio" or "video"
             headers = {
                 "X-RapidAPI-Key": RAPIDAPI_KEY,

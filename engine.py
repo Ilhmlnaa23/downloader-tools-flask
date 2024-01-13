@@ -519,23 +519,23 @@ RAPIDAPI_KEY = "f1a58d4d97msh22d8e0597709c97p136e8bjsn8083accf3f5f"
 
 
 ###################FITUR URL SHORTENER##########################
-db_connection = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="",
-    database="url_shortener"
-)
+# db_connection = mysql.connector.connect(
+#     host="localhost",
+#     user="root",
+#     password="",
+#     database="url_shortener"
+# )
 
-# Fungsi untuk memeriksa apakah custom URL sudah ada dalam database
-def is_custom_url_taken(short_id):
-    cursor = db_connection.cursor()
-    cursor.execute("SELECT COUNT(*) FROM urls WHERE short_id = %s", (short_id,))
-    count = cursor.fetchone()[0]
-    cursor.close()
-    return count > 0
+# # Fungsi untuk memeriksa apakah custom URL sudah ada dalam database
+# def is_custom_url_taken(short_id):
+#     cursor = db_connection.cursor()
+#     cursor.execute("SELECT COUNT(*) FROM urls WHERE short_id = %s", (short_id,))
+#     count = cursor.fetchone()[0]
+#     cursor.close()
+#     return count > 0
 
-def generate_short_id():
-    return shortuuid.uuid()[:5]
+# def generate_short_id():
+#     return shortuuid.uuid()[:5]
 
 
 
