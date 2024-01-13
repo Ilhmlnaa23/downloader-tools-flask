@@ -1,5 +1,5 @@
 /media/
-/*.txt
+t.txt
 test.py
 __pycache__
 Downloader-Tools-Backend.code-workspace
