@@ -2,13 +2,16 @@ from flask import Flask, request, send_file, jsonify, abort
 from engine import *
 import os
 from functools import wraps
+from datetime import datetime
+from apscheduler.schedulers.background import BackgroundScheduler
+import shutil
 
 app = Flask(__name__,)
 app.secret_key = "garox"
 app.config['UPLOAD_FOLDER'] = 'media/youtube'
 app.config['SESSION_TYPE'] = 'filesystem'
 
-linkvideo = 'source_url'
+linksource = 'source_url'
 
 @app.route('/')
 def index():
@@ -43,7 +46,7 @@ class sosial_downloader:
         new_file = None
 
         if request.method == 'POST':
-            video_url = request.form[linkvideo]
+            video_url = request.form[linksource]
             title = youtube_title(video_url)
 
             download_option = request.form.get('download_option')
@@ -85,7 +88,7 @@ class sosial_downloader:
     @api_key_required
     def twitter_downloader():
         if request.method == 'POST':
-            url = request.form[linkvideo]
+            url = request.form[linksource]
             option = request.form['download_option'] 
 
             headers = {
@@ -144,7 +147,7 @@ class sosial_downloader:
     @app.route('/instagram_downloader', methods=['POST'])
     @api_key_required
     def instagram_downloader():
-        url = request.form[linkvideo]
+        url = request.form[linksource]
         file_name = None  # 
         #timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S_UTC")
 
@@ -188,7 +191,7 @@ class sosial_downloader:
     @api_key_required
     def tiktok_downloader_page():
         if request.method == 'POST':
-            url = request.form[linkvideo]
+            url = request.form[linksource]
             option = request.form['download_option']  # This should be either "audio" or "video"
             headers = {
                 "X-RapidAPI-Key": RAPIDAPI_KEY,
@@ -238,7 +241,60 @@ class sosial_downloader:
         return send_file(file_path, as_attachment=True)
 
 # Tiktok Downloader End
+
+# Spotify Downloader Start
+    @app.route('/spotify_downloader', methods=['POST'])
+    def spotify_downloader_page():
+        if request.method == 'POST':
+            song_url = request.form[linksource]
+            output_folder = os.path.join("media/spotify")
+
+            try:
+                title = download_song_from_spotify(song_url, output_folder)
+                file_name = f"{title}.mp3"
+                url = f"/downloaded_spotify/{file_name}"
+                response_data = {
+                        "success": True,
+                        "title": file_name,
+                        "url": url
+                    }
+            except Exception as e:
+                response_data = {
+                        "success": True,
+                        "title": file_name,
+                        "url": url
+                    }
+
+            return jsonify(response_data)
+
     
+    @app.route('/downloaded_spotify/<file_name>')
+    def download_spotify_file(file_name):
+        media_folder = os.path.join("media", "spotify")
+        file_path = os.path.join(media_folder, file_name)
+        return send_file(file_path, as_attachment=True)
+
+# Spotify Downloader End
+
+# Fungsi untuk menghapus folder
+def delete_folders_contents():
+    media_folder = os.path.join("media")
+    def delete_contents_windows(path):
+        os.system(f"rd /s /q \"{path}\"")
+    def delete_contents_linux(path):
+        shutil.rmtree(path)
+    if os.path.exists(media_folder):
+        if os.name == "nt":  # Windows
+            delete_contents_windows(media_folder)
+        else:  # Linux 
+                delete_contents_linux(media_folder)
+    print("Downloader Media Folder Clear")
+
+    # Schedule the deletion job to run every hour
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(delete_folders_contents, 'interval', hours=2)
+    scheduler.start()
+
 # ...
 
 if __name__ == "__main__":
