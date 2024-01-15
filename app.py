@@ -7,6 +7,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 import shutil
 from secrets import token_urlsafe
 
+
 app = Flask(__name__,)
 app.secret_key = "garox"
 app.config['UPLOAD_FOLDER'] = 'media/youtube'
