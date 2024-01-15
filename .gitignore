@@ -2,7 +2,13 @@
 /dev/
 t.txt
 test.py
+__pycache__/
 __pycache__
 Downloader-Tools-Backend.code-workspace
+<<<<<<< HEAD
+app old.py
+.gitignore
+=======
 .gitignore
 
+>>>>>>> 6dacbc3313da6ead93426009a2d26841290a0fbb

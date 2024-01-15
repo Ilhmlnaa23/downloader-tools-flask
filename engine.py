@@ -51,9 +51,9 @@ def download_video_yt(url, output_path=None):
         #youtube = YouTube(url)
         youtube = YouTube(url, on_progress_callback=progress_function)
         # Menampilkan informasi tentang video
-        print(f"{Fore.CYAN}Judul video:", youtube.title)
-        print(f"{Fore.CYAN}Durasi video:", youtube.length, "detik")
-        print()
+        # print(f"{Fore.CYAN}Judul video:", youtube.title)
+        # print(f"{Fore.CYAN}Durasi video:", youtube.length, "detik")
+        # print()
         # Memilih stream dengan kualitas tertinggi
         video_stream = youtube.streams.get_highest_resolution()
 
@@ -80,9 +80,9 @@ def download_audio_yt(url, output_path=None):
         #youtube = YouTube(url)
         youtube = YouTube(url, on_progress_callback=progress_function)
         # Menampilkan informasi tentang video
-        print(f"{Fore.CYAN}Judul video:", youtube.title)
-        print(f"{Fore.CYAN}Durasi video:", youtube.length, "detik")
-        print()
+        # print(f"{Fore.CYAN}Judul video:", youtube.title)
+        # print(f"{Fore.CYAN}Durasi video:", youtube.length, "detik")
+        # print()
         #print("Nama Channel:", youtube.channel_id)
         # Memilih stream dengan format audio (audio-only)
         audio_stream = youtube.streams.filter(only_audio=True).first()
@@ -353,19 +353,22 @@ def download_post_ig(url):
         insta = instaloader.Instaloader(dirname_pattern='media/instagram')
         post = instaloader.Post.from_shortcode(insta.context, url.split("/")[-2])
 
-        output_folder = os.path.join("media","instagram")
+        post_date = post.date
+        formatted_date = post_date.strftime("%Y-%m-%d_%H-%M-%S_UTC")
+        output_folder = os.path.join("media", "instagram")
         os.makedirs(output_folder, exist_ok=True)
         output_path = os.path.join(output_folder)
-        print("Memulai pengunduhan media...")
+
         insta.download_post(post, target=output_path)
-        print("Media berhasil diunduh!")
 
-        post_date = post.date
-        #post_date_utc = post_date.astimezone(timezone.utc)
-        formatted_date = post_date.strftime("%Y-%m-%d_%H-%M-%S_UTC")
+        # Count the number of images downloaded
+        image_count = sum(1 for file in os.listdir(output_path) if formatted_date in file and file.endswith('.jpg'))
+        video_count = sum(1 for file in os.listdir(output_path) if formatted_date in file and file.endswith('.mp4'))
 
-        print("nama file:", formatted_date)
-        return formatted_date
+        if image_count > 1 :
+            formatted_date = post_date.strftime("%Y-%m-%d_%H-%M-%S_UTC")
+
+        return formatted_date, image_count, video_count
     except instaloader.exceptions.InstaloaderException as e:
         print("Terjadi kesalahan saat mengunduh media:", str(e))
     except Exception as e:
@@ -498,6 +501,8 @@ def download_song_from_spotify(song_url, output_folder):
     except Exception as e:
         print("Terjadi kesalahan:", str(e))
         return None
+    finally:
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 def get_spotify_api_status():
     api_url = "https://rapidapi.com"
