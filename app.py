@@ -20,8 +20,35 @@ def index():
     response_data = {"Status": 'Ready'}
     return response_data
 
+class erorr_handler:
+
+    @app.route('/maintenance')
+    def maintenance():
+        response_data = {"Status": 'Server Under Maintenance'}
+        return response_data
+
+    @app.errorhandler(500)
+    def internal_server_error(e):
+        response_data = {"Status": 'Internal Server Erorr'}, 500
+        return response_data
+
+    @app.errorhandler(404)
+    def page_not_found_error(e):
+        response_data = {"Status": 'Page Not Found'}, 404
+        return response_data
+
+    @app.errorhandler(405)
+    def method_not_allowed_error(e):
+        response_data = {"Status": 'Method not Allowed'}, 405
+        return response_data
+    
+    @app.errorhandler(401)
+    def method_not_allowed_error(e):
+        response_data = {"Status": 'Unauthorized, Invalid API key.'}, 401
+        return response_data
+
 # AUTH KE API ENDPOINT
-VALID_API_KEYS = ["theworldinyourhand", "myapixaas"]
+VALID_API_KEYS = ["theworldinyourhand", "Ilhmlnaa023"]
 
 def validate_api_key(api_key):
     return api_key in VALID_API_KEYS
@@ -164,7 +191,7 @@ class sosial_downloader:
  # Twitter Downloader End
 
 # Instagram Downloader Start
-    @app.route('/instagram', methods=['POST'])
+    @app.route('/instagram', methods=['GET', 'POST'])
     @api_key_required
     def instagram_downloader():
         url = request.form[linksource]
@@ -268,7 +295,7 @@ class sosial_downloader:
 # Tiktok Downloader End
 
 # Spotify Downloader Start
-    @app.route('/spotify', methods=['POST'])
+    @app.route('/spotify', methods=['GET', 'POST'])
     @api_key_required
     def spotify_downloader():
         if request.method == 'POST':
