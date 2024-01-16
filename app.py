@@ -168,20 +168,18 @@ class sosial_downloader:
             yt = YouTube(video_url)
             
             video_title = yt.title
-            video_thumbnail = yt.thumbnail_url
-            
+            video_thumbnail = [{'url': thumb['url'], 'width': thumb['width'], 'height': thumb['height']} for thumb in yt.vid_info['videoDetails']['thumbnail']['thumbnails']]
             
             cleaned_title = ''.join(c for c in video_title if c.isalnum() or c.isspace())
             cleaned_title = cleaned_title.replace(' ', '_')
 
-            download_links = [{'quality': stream.resolution or 'Audio Only', 'url': stream.url} for stream in yt.streams]
+            download_links = [{'quality': stream.resolution or 'Audio Only', 'type': stream.mime_type.split('/')[-1], 'url': stream.url} for stream in yt.streams]
             response_data = {'title': video_title, 'thumbnail': video_thumbnail, 'downloadLinks': download_links}
 
             return jsonify(response_data)
 
         except Exception as e:
             print(e)
-            return jsonify(error='Internal Server Error'), 500
 # Youtube Downloader End
 
 # Twitter Downloader Start
