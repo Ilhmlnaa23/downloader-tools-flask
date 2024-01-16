@@ -9,7 +9,7 @@ from secrets import token_urlsafe
 
 
 app = Flask(__name__,)
-app.secret_key = "garox"
+app.secret_key = "myappv2x"
 app.config['UPLOAD_FOLDER'] = 'media/youtube'
 app.config['SESSION_TYPE'] = 'filesystem'
 token_to_filename_mapping = {}
@@ -18,49 +18,73 @@ linksource = 'source_url'
 @app.route('/')
 def index():
     response_data = {"Status": 'Ready'}
-    return response_data
+    return jsonify(response_data)
 
 class erorr_handler:
 
     @app.route('/maintenance')
     def maintenance():
         response_data = {"Status": 'Server Under Maintenance'}
-        return response_data
+        return jsonify(response_data)
 
     @app.errorhandler(500)
     def internal_server_error(e):
-        response_data = {"Status": 'Internal Server Erorr'}, 500
-        return response_data
+        response_data = {
+                    "error": {
+                    "code": 500,
+                    "message": "Internal Server Erorr"
+                }
+            }
+        return jsonify(response_data)
 
     @app.errorhandler(404)
     def page_not_found_error(e):
-        response_data = {"Status": 'Page Not Found'}, 404
-        return response_data
+        response_data = {
+                    "error": {
+                    "code": 404,
+                    "message": "Page Not Found"
+                }
+            }
+        return jsonify(response_data)
 
     @app.errorhandler(405)
     def method_not_allowed_error(e):
-        response_data = {"Status": 'Method not Allowed'}, 405
-        return response_data
-    
-    @app.errorhandler(401)
-    def method_not_allowed_error(e):
-        response_data = {"Status": 'Unauthorized, Invalid API key.'}, 401
-        return response_data
+        response_data = {
+                    "error": {
+                    "code": 405,
+                    "message": "Method not Allowed"
+                }
+            }
+        return jsonify(response_data)
 
 # AUTH KE API ENDPOINT
 VALID_API_KEYS = ["theworldinyourhand", "Ilhmlnaa023"]
 
+def get_api_keys_from_endpoint(api_endpoint):
+    response = requests.get(api_endpoint)
+    if response.status_code == 200:
+        api_keys_json = response.json()
+        return api_keys_json.get("keys", [])
+    else:
+        return []
+
 def validate_api_key(api_key):
-    return api_key in VALID_API_KEYS
+    all_api_keys = set(VALID_API_KEYS + get_api_keys_from_endpoint("http://172.20.20.20:3080/key"))
+    return api_key in all_api_keys
 
 def api_key_required(func):
-
     @wraps(func)
     def decorated_function(*args, **kwargs):
         api_key = request.headers.get("Api-Key")
 
         if not api_key or not validate_api_key(api_key):
-            abort(401, description="Unauthorized: Invalid API key.")
+            error_response = {
+                "error": {
+                    "code": 401,
+                    "message": "Unauthorized: Invalid API key."
+                }
+            }
+            return jsonify(error_response), 401
 
         return func(*args, **kwargs)
 
@@ -76,6 +100,9 @@ def download_instagram_file_by_token(random_token, extension):
             return send_file(file_path, as_attachment=True, download_name=f"{actual_filename.split('.')[0]}.{extension}")
         else:
             abort(404, description="File not found.")
+
+
+#############ROUTE SECTION###################
 
 class sosial_downloader:
 # Youtube Downloader Start
@@ -129,6 +156,32 @@ class sosial_downloader:
         else:
             abort(404, description="File not found.")
 
+
+    @app.route('/v2/youtube', methods=['GET'])
+    def download_video():
+        try:
+            video_url = request.args.get('url')
+
+            if not video_url:
+                return jsonify(error='Invalid video URL'), 400
+
+            yt = YouTube(video_url)
+            
+            video_title = yt.title
+            video_thumbnail = yt.thumbnail_url
+            
+            
+            cleaned_title = ''.join(c for c in video_title if c.isalnum() or c.isspace())
+            cleaned_title = cleaned_title.replace(' ', '_')
+
+            download_links = [{'quality': stream.resolution or 'Audio Only', 'url': stream.url} for stream in yt.streams]
+            response_data = {'title': video_title, 'thumbnail': video_thumbnail, 'downloadLinks': download_links}
+
+            return jsonify(response_data)
+
+        except Exception as e:
+            print(e)
+            return jsonify(error='Internal Server Error'), 500
 # Youtube Downloader End
 
 # Twitter Downloader Start
