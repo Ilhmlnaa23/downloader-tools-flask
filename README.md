@@ -19,7 +19,7 @@
 | :-------- | :------- | :------------------------- |
 | `api_key` | `string` | **Required**. Your API key |
 | `source_link` | `string` | **Required**. The Source to be Downloaded  |
-| `download_option` | `string` | **Required**. Type of File to Download |
+| `download_option` | `string` | **Except instagram and spotify**. Type of File to Download |
 
 #### Source Link
 
