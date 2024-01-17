@@ -36,7 +36,7 @@
 
 ```
   Example :
-  'img' for image
+  'image' for image
   'video' for video
   'audio' for audio
 ```
