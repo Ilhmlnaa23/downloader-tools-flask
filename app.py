@@ -6,7 +6,8 @@ from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 import shutil
 from secrets import token_urlsafe
-
+import eventlet
+from eventlet import wsgi
 
 app = Flask(__name__,)
 app.secret_key = "myappv2x"
@@ -413,6 +414,7 @@ scheduler.start()
 # ...
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5080, debug=True)
+    # app.run(host="0.0.0.0", port=5080, debug=True)
+    wsgi.server(eventlet.listen(('0.0.0.0', 5080)), app)
 
 # ...
