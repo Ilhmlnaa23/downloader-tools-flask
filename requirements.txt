@@ -12,4 +12,5 @@ apscheduler==3.10.1
 gevent==23.7.0
 mysql-connector-python
 shortuuid==1.0.11
+flask-cors
 spotdl

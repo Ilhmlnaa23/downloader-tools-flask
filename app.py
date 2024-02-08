@@ -6,9 +6,13 @@ from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 import shutil
 from secrets import token_urlsafe
+import eventlet
+from eventlet import wsgi
+from flask_cors import CORS
 
 
 app = Flask(__name__,)
+CORS(app)
 app.secret_key = "myappv2x"
 app.config['UPLOAD_FOLDER'] = 'media/youtube'
 app.config['SESSION_TYPE'] = 'filesystem'
@@ -224,7 +228,8 @@ class sosial_downloader:
                     url = video_variants[0].get("url")  # Mengambil URL video pertama
                     response_data = {
                         "status": 'success',
-                        "url": url
+                        "url": url,
+                        "title": description
             }
                 else:
                     url = None
@@ -316,6 +321,7 @@ class sosial_downloader:
                     url = audio_url
                     response_data = {
                         "status": "success",
+                        "title": audio_title,
                         "url": url
                     }
 
@@ -325,6 +331,7 @@ class sosial_downloader:
                     url = video_url
                     response_data = {
                         "status": "success",
+                        "title": video_title,
                         "url": url
                     }
                     
@@ -414,5 +421,6 @@ scheduler.start()
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5080, debug=True)
+    # wsgi.server(eventlet.listen(('0.0.0.0', 5080)), app)
 
 # ...
