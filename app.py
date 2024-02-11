@@ -267,7 +267,8 @@ class sosial_downloader:
             image_urls[f"img{i}"] = url_image
 
         video_urls = {}
-        for i in range(1, video_count + 1):
+        video_start_number = 2 if image_count > 1 else 1
+        for i in range(video_start_number, video_start_number + video_count):
             random_token_video_i = f"{random_token}vid{i}"
             file_name_video = f"{file_name_prefix}_{i}.mp4"
             token_to_filename_mapping[random_token_video_i] = os.path.basename(file_name_video)
