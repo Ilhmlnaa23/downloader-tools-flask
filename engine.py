@@ -368,6 +368,7 @@ def download_post_ig(url):
         if image_count > 1 :
             formatted_date = post_date.strftime("%Y-%m-%d_%H-%M-%S_UTC")
 
+
         return formatted_date, image_count, video_count
     except instaloader.exceptions.InstaloaderException as e:
         print("Terjadi kesalahan saat mengunduh media:", str(e))
