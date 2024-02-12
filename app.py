@@ -21,7 +21,10 @@ linksource = 'source_url'
 
 @app.route('/')
 def index():
-    response_data = {"Status": 'Ready'}
+    response_data = {
+                "Status": 'Ready',
+                "puh": 'Ampun'
+            }
     return jsonify(response_data)
 
 class erorr_handler:
