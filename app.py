@@ -263,17 +263,17 @@ class sosial_downloader:
         image_urls = {}
         for i in range(1, image_count + 1):
             random_token_image_i = f"{random_token}img{i}"
-            file_name_image = f"{file_name_prefix}_{i}.jpg"
+            file_name_image = f"{file_name_prefix}.jpg" if image_count == 1 else f"{file_name_prefix}_{i}.jpg"
             token_to_filename_mapping[random_token_image_i] = os.path.basename(file_name_image)
             url_image = f"/d/instagram/image/{random_token_image_i}"
             # image_urls.append(url_image)
             image_urls[f"img{i}"] = url_image
 
         video_urls = {}
-        video_start_number = 2 if image_count > 1 else 1
+        video_start_number = 2 if image_count > 1 else 1 
         for i in range(video_start_number, video_start_number + video_count):
             random_token_video_i = f"{random_token}vid{i}"
-            file_name_video = f"{file_name_prefix}_{i}.mp4"
+            file_name_video = f"{file_name_prefix}.mp4" if video_count == 1 else f"{file_name_prefix}_{i}.mp4"
             token_to_filename_mapping[random_token_video_i] = os.path.basename(file_name_video)
             url_video = f"/d/instagram/video/{random_token_video_i}"
             video_urls[f"vid{i}"] = url_video
@@ -424,7 +424,8 @@ scheduler.start()
 # ...
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5080, debug=True)
+    # app.run(host="0.0.0.0", port=5080, debug=True)
     # wsgi.server(eventlet.listen(('0.0.0.0', 5080)), app)
+    wsgi.server(eventlet.listen(("0.0.0.0", 3000)), app, debug=True)
 
 # ...
