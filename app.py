@@ -9,7 +9,8 @@ from secrets import token_urlsafe
 import eventlet
 from eventlet import wsgi
 from flask_cors import CORS
-
+import qrcode
+from io import BytesIO
 
 app = Flask(__name__,)
 CORS(app)
@@ -76,7 +77,13 @@ def get_api_keys_from_endpoint(api_endpoint):
         return []
 
 def validate_api_key(api_key):
-    all_api_keys = set(VALID_API_KEYS + get_api_keys_from_endpoint("http://172.20.20.20:3080/key"))
+    try:
+        api_keys_from_server = get_api_keys_from_endpoint("http://172.20.20.20:3080/key")
+    except Exception as e:
+        print(f"Failed to retrieve API keys from server: {e}")
+        api_keys_from_server = []
+
+    all_api_keys = set(VALID_API_KEYS + api_keys_from_server)
     return api_key in all_api_keys
 
 def api_key_required(func):
@@ -110,6 +117,27 @@ def download_instagram_file_by_token(random_token, extension):
 
 
 #############ROUTE SECTION###################
+@app.route('/qrcode/<text>')
+def generate_qrcode(text):
+    # Membuat QR code
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(text)
+    qr.make(fit=True)
+
+    img = qr.make_image(fill_color="black", back_color="white")
+
+    # Menyimpan QR code ke dalam memory buffer
+    img_bytes = BytesIO()
+    img.save(img_bytes)
+    img_bytes.seek(0)
+
+    # Mengirimkan QR code sebagai file gambar
+    return send_file(img_bytes, mimetype='image/png')
 
 class sosial_downloader:
 # Youtube Downloader Start
@@ -424,8 +452,8 @@ scheduler.start()
 # ...
 
 if __name__ == "__main__":
-    # app.run(host="0.0.0.0", port=5080, debug=True)
+    app.run(host="0.0.0.0", port=5080, debug=True)
     # wsgi.server(eventlet.listen(('0.0.0.0', 5080)), app)
-    wsgi.server(eventlet.listen(("0.0.0.0", 3000)), app, debug=True)
+    # wsgi.server(eventlet.listen(("0.0.0.0", 3000)), app, debug=True)
 
 # ...
