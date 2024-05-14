@@ -117,11 +117,13 @@ def download_instagram_file_by_token(random_token, extension):
 
 
 #############ROUTE SECTION###################
-@app.route('/qrcode/<text>')
-def generate_qrcode(text):
+@app.route('/qrcode')
+def generate_qrcode():
+    text = request.args.get('data', '')
+
     # Membuat QR code
     qr = qrcode.QRCode(
-        version=1,
+        version=4,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
         box_size=10,
         border=4,
